@@ -1,0 +1,15 @@
+{
+  "name": "guanyin-lingqian",
+  "version": 2,
+  "builds": [
+    {
+      "src": "next.config.js",
+      "use": "@vercel/next"
+    }
+  ],
+  "env": {
+    "LINGQIAN_API_ID": "10007267",
+    "LINGQIAN_API_KEY": "f412cd662f4613e7b3f651bc38094d91",
+    "DEEPSEEK_API_KEY": "sk-e965f6232d684a2d90192a957d32f6bb"
+  }
+}

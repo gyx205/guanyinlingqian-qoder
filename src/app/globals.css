@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-gray-200;
+  }
+  
+  body {
+    @apply bg-gradient-to-br from-primary-50 to-primary-100 min-h-screen;
+    font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  }
+  
+  html {
+    font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  }
+}
+
+@layer components {
+  /* 中式半透明卡片 */
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md rounded-xl shadow-lg border border-white/20;
+  }
+  
+  /* 中式按钮 */
+  .chinese-btn {
+    @apply bg-gradient-to-r from-primary-400 to-primary-500 text-white px-8 py-3 rounded-full font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300;
+  }
+  
+  /* 抽签动画容器 */
+  .draw-animation {
+    @apply transform transition-all ease-in-out;
+    transition-duration: 2000ms;
+  }
+  
+  /* 签牌翻转效果 */
+  .card-flip {
+    perspective: 1000px;
+  }
+  
+  .card-flip-inner {
+    @apply relative w-full h-full transition-transform duration-500;
+    transform-style: preserve-3d;
+  }
+  
+  .card-flip.flipped .card-flip-inner {
+    transform: rotateY(180deg);
+  }
+  
+  .card-front, .card-back {
+    @apply absolute w-full h-full rounded-xl;
+    backface-visibility: hidden;
+  }
+  
+  .card-back {
+    transform: rotateY(180deg);
+  }
+}
+
+@layer utilities {
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  
+  .transform-style-preserve-3d {
+    transform-style: preserve-3d;
+  }
+}
