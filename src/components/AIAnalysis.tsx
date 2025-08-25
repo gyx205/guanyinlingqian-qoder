@@ -18,28 +18,80 @@ export default function AIAnalysis({ question, lingQianData, onClose }: AIAnalys
       try {
         setLoading(true);
         
-        const response = await fetch('/api/ai-analysis', {
+        // 构建完整的提示词
+        const prompt = `你是一位精通观音灵签解读的大师，请根据用户的问题和抽到的签文，给出详细的解读分析。
+
+用户问题：${question}
+
+签文信息：
+- 签文：${lingQianData.qianwen}
+- 签语：${lingQianData.qianyu}
+- 解曰：${lingQianData.jieyue}
+
+请结合用户的具体问题和签文内容，给出针对性的解读分析，包括：
+1. 对当前问题的整体分析
+2. 签文对此问题的指导意义
+3. 具体的建议和注意事项
+
+要求：
+- 语言温和、智慧，体现传统文化的深度
+- 针对用户问题给出具体的指导
+- 字数控制在300-500字
+- 语调积极正面，给予用户信心和方向`;
+
+        // 直接调用 Deepseek API
+        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.NEXT_PUBLIC_DEEPSEEK_API_KEY}`
           },
           body: JSON.stringify({
-            question,
-            qianwen: lingQianData.qianwen,
-            qianyu: lingQianData.qianyu,
-            jieyue: lingQianData.jieyue,
-          }),
+            model: 'deepseek-chat',
+            messages: [
+              {
+                role: 'system',
+                content: '你是一位精通观音灵签解读的大师，擅长结合传统文化智慧为人解惑答疑。'
+              },
+              {
+                role: 'user',
+                content: prompt
+              }
+            ],
+            max_tokens: 800,
+            temperature: 0.7
+          })
         });
 
-        const result: AIAnalysisType = await response.json();
+        if (!response.ok) {
+          throw new Error(`Deepseek API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const analysis = data.choices[0]?.message?.content || '暂无解析';
+
+        const result: AIAnalysisType = {
+          success: true,
+          analysis
+        };
+        
         setAnalysis(result);
       } catch (error) {
         console.error('AI分析失败:', error);
-        setAnalysis({
-          success: false,
-          error: '网络连接失败，请重试',
-          analysis: ''
-        });
+        
+        // 如果是跨域错误，提供基础解签
+        if (error instanceof TypeError && error.message.includes('fetch')) {
+          setAnalysis({
+            success: true,
+            analysis: `根据您抽到的「${lingQianData.qianming}」签：\n\n签文寃意：${lingQianData.qianyu}\n\n解签指导：${lingQianData.jieyue}\n\n针对您的问题“${question}”，这支签提示您要保持耐心和信心，相信好的结果会在适当的时候到来。建议您积极行动，同时遵循自然规律，万事不可急躁。\n\n温馨提示：签文仅供参考，人生道路需要您自己把握。`
+          });
+        } else {
+          setAnalysis({
+            success: false,
+            error: 'AI解签服务暂时不可用，请查看签文解释',
+            analysis: ''
+          });
+        }
       } finally {
         setLoading(false);
       }
