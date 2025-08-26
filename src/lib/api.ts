@@ -2,7 +2,7 @@ import { LingQianData, XianjiParsed } from '@/types';
 
 // 调用灵签 API
 export async function fetchLingQian(): Promise<LingQianData> {
-  const apiUrl = 'http://124.220.49.230/api/mingli/guanyin.php';
+  const apiUrl = 'https://cn.apihz.cn/api/mingli/guanyin.php';
   const params = new URLSearchParams({
     id: process.env.NEXT_PUBLIC_LINGQIAN_API_ID || '10007267',
     key: process.env.NEXT_PUBLIC_LINGQIAN_API_KEY || 'f412cd662f4613e7b3f651bc38094d91'
